@@ -1,14 +1,14 @@
 // @flow
 import type { Target } from '../types'
-import domElements from '../utils/domElements'
 
 export default (styledComponent: Function, constructWithOptions: Function) => {
   const styled = (tag: Target) => constructWithOptions(styledComponent, tag)
 
-  // Shorthands for all valid HTML Elements
-  domElements.forEach(domElement => {
-    styled[domElement] = styled(domElement)
+  return new Proxy(styled, {
+    get(target, name) {
+      return name in target
+        ? target[name]
+        : styled(name)
+    },
   })
-
-  return styled
 }
